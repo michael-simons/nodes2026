@@ -47,7 +47,6 @@ With Virtual Graph, I finally come full circle: No import, just mapping relation
 │ day date   │
 └────────────┘
 
-
 ┌──────────────────────────────┐
 │          played_on           │
 │                              │
@@ -68,7 +67,7 @@ SET SECRET {type: 'anonymous'}
 SET MAPPING
 NODE TABLES (
   tracks LABEL Track PROPERTIES ARE ALL COLUMNS EXCEPT (id),
-  people LABEL Day  PROPERTIES ARE ALL COLUMNS EXCEPT (id)
+  days LABEL Day  PROPERTIES ARE ALL COLUMNS EXCEPT (id)
 )
 RELATIONSHIP TABLES (
   played_on
