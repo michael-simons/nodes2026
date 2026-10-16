@@ -81,6 +81,15 @@ ALTER TABLE plays ADD PRIMARY KEY (id);
 SELECT count(*) FROM plays;
 
 
+CREATE TABLE related_artists AS (
+  SELECT r.* 
+  FROM src.related_artists r 
+  JOIN artists a1 on a1.id = r.source_id
+  JOIN artists a2 on a2.id = r.target_id
+);
+ALTER TABLE related_artists ADD PRIMARY KEY (source_id, target_id);
+
+
 CREATE VIEW days AS (
   SELECT row_number() OVER (ORDER BY day) AS id, day
   FROM (
