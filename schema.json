@@ -1,0 +1,365 @@
+{
+  "catalog": "music",
+  "schema": "main",
+  "entities": {
+    "nodes": [
+      {
+        "label": "Decade",
+        "table": "decades",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "value"
+          }
+        ]
+      },
+      {
+        "label": "Year",
+        "table": "years",
+        "key": [
+          {
+            "column": "value"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "value"
+          }
+        ]
+      },
+      {
+        "label": "Day",
+        "table": "days",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "value",
+            "column": "day"
+          }
+        ]
+      },
+      {
+        "label": "Artist",
+        "table": "artists",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "artist"
+          }
+        ]
+      },
+      {
+        "label": "Album",
+        "table": "albums",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "album"
+          },
+          {
+            "name": "discogsId",
+            "column": "discogs_id"
+          }
+        ]
+      },
+      {
+        "label": "Genre",
+        "table": "genres",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "genre"
+          }
+        ]
+      },
+      {
+        "label": "Track",
+        "table": "tracks",
+        "key": [
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "name",
+            "column": "name"
+          },
+          {
+            "name": "playedCount",
+            "column": "played_count"
+          },
+          {
+            "name": "rating",
+            "column": "rating"
+          },
+          {
+            "name": "duration",
+            "column": "duration"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "label": "PART_OF",
+        "table": "years",
+        "start": {
+          "targetEntity": "Year",
+          "keys": [
+            {
+              "nodeColumn": "value",
+              "relationshipColumn": "value"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Decade",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "decade_id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "value"
+          },
+          {
+            "column": "decade_id"
+          }
+        ]
+      },
+      {
+        "label": "CONTAINS",
+        "table": "tracks",
+        "start": {
+          "targetEntity": "Album",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "album_id"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Track",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "album_id"
+          },
+          {
+            "column": "id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "discCount",
+            "column": "disc_count"
+          },
+          {
+            "name": "discNumber",
+            "column": "disc_number"
+          },
+          {
+            "name": "trackCount",
+            "column": "track_count"
+          },
+          {
+            "name": "trackNumber",
+            "column": "track_number"
+          }
+        ]
+      },
+      {
+        "label": "RELEASED_IN",
+        "table": "albums",
+        "start": {
+          "targetEntity": "Album",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "id"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Year",
+          "keys": [
+            {
+              "nodeColumn": "value",
+              "relationshipColumn": "year"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "id"
+          },
+          {
+            "column": "year"
+          }
+        ]
+      },
+      {
+        "label": "RELEASED_BY",
+        "table": "albums",
+        "end": {
+          "targetEntity": "Artist",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "artist_id"
+            }
+          ]
+        },
+        "start": {
+          "targetEntity": "Album",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "id"
+          },
+          {
+            "column": "artist_id"
+          }
+        ]
+      },
+      {
+        "label": "RELATED",
+        "table": "related_artists",
+        "start": {
+          "targetEntity": "Artist",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "source_id"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Artist",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "target_id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "source_id"
+          },
+          {
+            "column": "target_id"
+          }
+        ]
+      },
+      {
+        "label": "HAS",
+        "table": "albums",
+        "start": {
+          "targetEntity": "Album",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "id"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Genre",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "genre_id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "id"
+          },
+          {
+            "column": "genre_id"
+          }
+        ]
+      },
+      {
+        "label": "PLAYED_ON",
+        "table": "played_on",
+        "start": {
+          "targetEntity": "Track",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "track_id"
+            }
+          ]
+        },
+        "end": {
+          "targetEntity": "Day",
+          "keys": [
+            {
+              "nodeColumn": "id",
+              "relationshipColumn": "day_id"
+            }
+          ]
+        },
+        "key": [
+          {
+            "column": "track_id"
+          },
+          {
+            "column": "day_id"
+          }
+        ],
+        "properties": [
+          {
+            "name": "playedOn",
+            "column": "played_on"
+          }
+        ]
+      }
+    ]
+  }
+}
