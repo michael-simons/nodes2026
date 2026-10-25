@@ -197,32 +197,6 @@ RETURN toInteger(gds.util.nodeProperty($graphName, seed, 'community', 'Track')) 
 ORDER BY plays DESC LIMIT 1
 ```
 
-### Find artist's top clusters
-
-The artist's top 3 clusters overall, by plays of the artist's tracks in them. The list of these clusters is the
-parameter `$seedClusters` of the next step.
-
-```cypher
-MATCH (a:Artist)<-[:RELEASED_BY]-(:Album)-[:CONTAINS]->(t:Track)
-WHERE a.name = $artist
-WITH t, toInteger(gds.util.nodeProperty($graphName, t, 'community', 'Track')) AS cluster
-RETURN cluster, sum(t.playedCount) AS plays, count(*) AS tracks
-ORDER BY plays DESC LIMIT 3
-```
-
-### Recommend artist's tracks from top clusters
-
-Tracks by the same artist in the artist's top 3 clusters.
-
-```cypher
-MATCH (a:Artist)<-[:RELEASED_BY]-(al:Album)-[:CONTAINS]->(t:Track)
-WHERE a.name = $artist
-WITH al, t, toInteger(gds.util.nodeProperty($graphName, t, 'community', 'Track')) AS cluster
-UNWIND CASE WHEN cluster IN $seedClusters AND t.name <> $track THEN [t] ELSE [] END AS rec
-RETURN rec.name AS track, sum(rec.playedCount) AS plays, collect(DISTINCT al.name) AS albums, collect(DISTINCT cluster) AS clusters
-ORDER BY plays DESC LIMIT 15
-```
-
 ### Profile seed cluster
 
 Artists and genres of the cluster, weighted by number of tracks in the cluster. Keys are ids as strings (map keys must
@@ -237,6 +211,56 @@ RETURN apoc.coll.frequenciesAsMap(collect(toString(r[0]))) AS artists,
        apoc.coll.frequenciesAsMap(collect(toString(r[1]))) AS genres,
        apoc.coll.frequenciesAsMap(collect(gds.util.asNode(r[0]).name)) AS artistNames,
        apoc.coll.frequenciesAsMap(collect(gds.util.asNode(r[1]).name)) AS genreNames
+```
+
+### Find artist's top clusters
+
+The artist's top 3 clusters overall, by plays of the artist's tracks in them. The list of these clusters is the
+parameter `$seedClusters` of the next step.
+
+```cypher
+MATCH (a:Artist)<-[:RELEASED_BY]-(:Album)-[:CONTAINS]->(t:Track)
+WHERE a.name = $artist
+WITH t, toInteger(gds.util.nodeProperty($graphName, t, 'community', 'Track')) AS cluster
+RETURN cluster, sum(t.playedCount) AS plays, count(*) AS tracks
+ORDER BY plays DESC LIMIT 3
+```
+
+### Find related artists of cluster
+
+Artists `RELATED` to the cluster's artists, without the cluster's artists themselves. `RELATED` is stored in both
+directions, so following it outgoing finds each related artist once per cluster artist. Each related artist is weighted
+by the tracks in the cluster of the artists it's related to, summed up. `apoc.coll.frequenciesAsMap` does the summing,
+because a map can't be built from aggregated values without an aggregating `WITH`. The first map is the parameter
+`$related` of [Recommend by cluster artists and genres](#recommend-by-cluster-artists-and-genres). It's `{}` when no
+artist of the cluster has related artists.
+
+```cypher
+MATCH (a:Artist)-[:RELATED]->(r:Artist)
+WITH r, toString(id(a)) AS artistKey, toString(id(r)) AS relatedKey
+UNWIND
+  CASE
+    WHEN
+      artistKey IN keys($artists) AND NOT relatedKey IN keys($artists)
+      THEN range(1, $artists[artistKey])
+    ELSE []
+  END AS x
+RETURN
+  apoc.coll.frequenciesAsMap(collect(relatedKey)) AS related,
+  apoc.coll.frequenciesAsMap(collect(r.name)) AS relatedNames
+```
+
+### Recommend artist's tracks from top clusters
+
+Tracks by the same artist in the artist's top 3 clusters.
+
+```cypher
+MATCH (a:Artist)<-[:RELEASED_BY]-(al:Album)-[:CONTAINS]->(t:Track)
+WHERE a.name = $artist
+WITH al, t, toInteger(gds.util.nodeProperty($graphName, t, 'community', 'Track')) AS cluster
+UNWIND CASE WHEN cluster IN $seedClusters AND t.name <> $track THEN [t] ELSE [] END AS rec
+RETURN rec.name AS track, sum(rec.playedCount) AS plays, collect(DISTINCT al.name) AS albums, collect(DISTINCT cluster) AS clusters
+ORDER BY plays DESC LIMIT 15
 ```
 
 ### Recommend tracks played with seed
@@ -271,29 +295,6 @@ RETURN
   ] AS recommendations
 ORDER BY bestTrackCoPlays DESC, coPlays DESC
 LIMIT 20
-```
-### Find related artists of cluster
-
-Artists `RELATED` to the cluster's artists, without the cluster's artists themselves. `RELATED` is stored in both
-directions, so following it outgoing finds each related artist once per cluster artist. Each related artist is weighted
-by the tracks in the cluster of the artists it's related to, summed up. `apoc.coll.frequenciesAsMap` does the summing,
-because a map can't be built from aggregated values without an aggregating `WITH`. The first map is the parameter
-`$related` of [Recommend by cluster artists and genres](#recommend-by-cluster-artists-and-genres). It's `{}` when no
-artist of the cluster has related artists.
-
-```cypher
-MATCH (a:Artist)-[:RELATED]->(r:Artist)
-WITH r, toString(id(a)) AS artistKey, toString(id(r)) AS relatedKey
-UNWIND
-  CASE
-    WHEN
-      artistKey IN keys($artists) AND NOT relatedKey IN keys($artists)
-      THEN range(1, $artists[artistKey])
-    ELSE []
-  END AS x
-RETURN
-  apoc.coll.frequenciesAsMap(collect(relatedKey)) AS related,
-  apoc.coll.frequenciesAsMap(collect(r.name)) AS relatedNames
 ```
 
 ### Recommend by cluster artists and genres

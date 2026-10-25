@@ -3,9 +3,9 @@
 # Downloads DuckDB if necessary and starts Neo4j Virtual Graph
 #
 
-if [ ! -f "duckdb_jdbc-1.5.6.0.jar" ]; then
-  curl -O https://repo1.maven.org/maven2/org/duckdb/duckdb_jdbc/1.5.6.0/duckdb_jdbc-1.5.6.0.jar
-fi
+
+mkdir -p drivers
+cd drivers && curl --skip-existing  -O https://repo1.maven.org/maven2/org/duckdb/duckdb_jdbc/1.5.6.0/duckdb_jdbc-1.5.6.0.jar && cd - > /dev/null
 
 DIR="$(dirname "$(realpath "$0")")"
 
@@ -18,6 +18,6 @@ docker run \
   -e 'NEO4J_internal_virtual__graph_enabled=true' \
   -e 'NEO4J_internal_virtual__graph_home=/var/ge-home' \
   -e 'NEO4J_server_jvm_additional=-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=true' \
-  -v "$DIR"/duckdb_jdbc-1.5.6.0.jar:/var/lib/neo4j/lib/driver.jar \
+  -v "$DIR"/drivers/duckdb_jdbc-1.5.6.0.jar:/var/lib/neo4j/lib/driver.jar \
   -v "$DIR":/var/ge-home/ \
-  neo4j:2026.09.0-enterprise
+  neo4j:2026.10.1-enterprise
