@@ -193,7 +193,7 @@ Virtual Graph also needs the JDBC driver for the target database (here, DuckDB J
 
 This setup can be started with [`start_neo4j.sh`](start_neo4j.sh). The script will download the JDBC driver if necessary. 
 
-Neo4j Browser can be reached as per usual via [localhost:7474](http://localhost:7474) or via any driver on Port 7687. The recommend.sh script uses Cypher-Shell to connect.
+Neo4j Browser can be reached as per usual via [localhost:7474](http://localhost:7474) or via any driver on Port 7687. The `recommend.sh` script uses a small Java program and the Neo4j JDBC driver to connect to Neo4j Virtual Graph. On MacOS it can create an Apple Music Playlist from the recommendations (that is, if you have the tracks in your library).
 
 If you populate the music database yourself, I recommend skipping upgrading the worktree index like this:
 
