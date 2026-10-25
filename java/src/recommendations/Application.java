@@ -162,17 +162,21 @@ public final class Application implements Callable<Integer> {
 		var random = ThreadLocalRandom.current();
 		var session = JaplScript.startSession();
 		var appleMusic = com.tagtraum.macos.music.Application.getInstance();
-		var library = new ReferenceImpl("library playlist 1", appleMusic.getApplicationReference())
-			.cast(LibraryPlaylist.class);
+		var applicationReference = appleMusic.getApplicationReference();
+		var library = new ReferenceImpl("library playlist 1", applicationReference).cast(LibraryPlaylist.class);
 		var target = new ReferenceImpl("folder playlist %s".formatted(JaplScript.quote(this.targetFolder)),
-				appleMusic.getApplicationReference())
+				applicationReference)
 			.cast(FolderPlaylist.class);
-		var live = new ReferenceImpl("user playlist %s".formatted(JaplScript.quote("Live")),
-				appleMusic.getApplicationReference())
+		var live = new ReferenceImpl("user playlist %s".formatted(JaplScript.quote("Live")), applicationReference)
 			.cast(UserPlaylist.class);
 		var newPlaylist = appleMusic.make(UserPlaylist.CLASS, target,
 				Map.of("name", new ReferenceImpl(JaplScript.quote("%s %s".formatted(LocalDate.now(), track.name)),
-						appleMusic.getApplicationReference())));
+						applicationReference)))
+			.cast(UserPlaylist.class);
+
+		addTracks(appleMusic,
+				"artist is %s and name is %s".formatted(JaplScript.quote(track.artist), JaplScript.quote(track.name)),
+				library, live, newPlaylist);
 
 		int cnt = 0;
 		for (var item : src.get(columnTrack)) {
@@ -201,18 +205,23 @@ public final class Application implements Callable<Integer> {
 			if (trackName == null) {
 				continue;
 			}
-			var tracks = library.cast(LibraryPlaylist.class)
-				.getFileTracks(
-						"artist is %s and name is %s".formatted(JaplScript.quote(artist), JaplScript.quote(trackName)));
-			Arrays.stream(tracks)
-				.filter(t -> !t.isCompilation()
-						&& live.countFileTracks("database ID is %d".formatted(t.getDatabaseId())) == 0)
-				.findFirst()
-				.ifPresent(t -> appleMusic.duplicate(t, newPlaylist));
+
+			addTracks(appleMusic,
+					"artist is %s and name is %s".formatted(JaplScript.quote(artist), JaplScript.quote(trackName)),
+					library, live, newPlaylist);
 			++cnt;
 		}
 
 		session.commit();
+	}
+
+	private static void addTracks(com.tagtraum.macos.music.Application appleMusic, String filter,
+			LibraryPlaylist library, UserPlaylist live, UserPlaylist targetPlaylist) {
+		Arrays.stream(library.getFileTracks(filter))
+			.filter(t -> !t.isCompilation()
+					&& live.countFileTracks("database ID is %d".formatted(t.getDatabaseId())) == 0)
+			.findFirst()
+			.ifPresent(t -> appleMusic.duplicate(t, targetPlaylist));
 	}
 
 	private static Map<String, List<Object>> printAndTabularizeResultSet(ResultSet resultSet) throws SQLException {
