@@ -68,7 +68,7 @@ public final class Application implements Callable<Integer> {
 			defaultValue = "NONE")
 	private Playlist createPlaylist;
 
-	@CommandLine.Option(names = { "--pick-track-by" },
+	@CommandLine.Option(names = { "--pick-track" },
 			description = "If recommendations contains more than one track per row pick one by the given score",
 			required = true, defaultValue = "BY_RANDOM_SCORE")
 	private Pick pick;
