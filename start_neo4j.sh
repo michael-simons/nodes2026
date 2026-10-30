@@ -3,7 +3,6 @@
 # Downloads DuckDB if necessary and starts Neo4j Virtual Graph
 #
 
-
 mkdir -p drivers
 cd drivers && curl --skip-existing  -O https://repo1.maven.org/maven2/org/duckdb/duckdb_jdbc/1.5.6.0/duckdb_jdbc-1.5.6.0.jar && cd - > /dev/null
 

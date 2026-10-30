@@ -260,7 +260,7 @@ WHERE a.name = $artist
 WITH al, t, toInteger(gds.util.nodeProperty($graphName, t, 'community', 'Track')) AS cluster
 UNWIND CASE WHEN cluster IN $seedClusters AND t.name <> $track THEN [t] ELSE [] END AS rec
 RETURN rec.name AS track, sum(rec.playedCount) AS plays, collect(DISTINCT al.name) AS albums, collect(DISTINCT cluster) AS clusters
-ORDER BY plays DESC LIMIT 15
+ORDER BY plays DESC LIMIT 20
 ```
 
 ### Recommend tracks played with seed
