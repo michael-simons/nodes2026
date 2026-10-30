@@ -209,7 +209,7 @@ git update-index --no-skip-worktree music.db
 
 ## Graph Queries
 
-The queries have been developed using Claude Code CLI with Opus 5.5. Prose and queries have all been reviewed. The `recommend.sh` script sources all queries from [queries.md](queries.md).
+The queries have been developed using Claude Code CLI with Opus 5.5. Prose and queries have all been reviewed. The application sources all queries from [queries.md](queries.md).
 
 My recommendations in late 2026 for the track "Angst frisst Seele auf" bei "Feine Sahne Fischfilet" are pretty neat and accurate:
 
