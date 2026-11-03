@@ -326,3 +326,9 @@ CREATE TABLE "years"(id BIGINT, "value" INTEGER, decade_id BIGINT, PRIMARY KEY(i
 CREATE VIEW "days" AS SELECT row_number() OVER (ORDER BY "day") AS id, "day" FROM (SELECT DISTINCT CAST(played_on AS DATE) AS "day" FROM plays);
 CREATE VIEW played_on AS SELECT plays.id, "days".id AS day_id, played_on, track_id FROM plays INNER JOIN "days" ON (("day" = CAST(played_on AS DATE)));
 ```
+
+## Fun with Apple Music
+
+The Java program `recommendations.Application` has the ability to create Apple Music Playlists:
+
+![Video how the program creates a new playlist](make_playlist.mov)

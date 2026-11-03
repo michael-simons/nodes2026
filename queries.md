@@ -122,10 +122,11 @@ RETURN relationshipsWritten
 
 ### Cluster co-played tracks
 
-Clusters of tracks that are played together within 60 minutes. Leiden instead of Louvain for its resolution parameter
-`gamma` (GDS Louvain has none). `gamma` 8 halves the size of the largest clusters compared to `gamma` 1 (or Louvain),
-while the share of held-out same-hour pairs in the same cluster only drops from 44.7% to 44.4% (lift over chance 139
-instead of 127). Higher values give still smaller clusters, but lose co-plays faster (`gamma` 32: 43.6%).
+Clusters of tracks that are played together within 60 minutes (window defined in projection query). 
+Leiden instead of Louvain for its resolution parameter `gamma` (GDS Louvain has none). `gamma` 8 halves the size of 
+the largest clusters compared to `gamma` 1 (or Louvain),  while the share of held-out same-hour pairs in the same
+cluster only drops from 44.7% to 44.4% (lift over chance 139  instead of 127). Higher values give still smaller 
+clusters, but lose co-plays faster (`gamma` 32: 43.6%).
 
 ```cypher
 CALL gds.leiden.mutate($graphName, {
@@ -361,4 +362,17 @@ RETURN
   reason
 ORDER BY bestScore DESC, reason DESC
 LIMIT 20
+```
+
+### Visualization of Co-Played (unused for now)
+
+```cypher
+CALL gds.graph.relationships.stream(
+    $graphName, ['CO_PLAYED']
+)
+YIELD
+  sourceNodeId, targetNodeId, relationshipType
+LIMIT 100
+WITH  gds.util.asNode(sourceNodeId) AS src, gds.util.asNode(targetNodeId) AS target, relationshipType
+RETURN src, apoc.create.vRelationship(src, relationshipType, {}, target), target
 ```
