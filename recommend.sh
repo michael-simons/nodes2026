@@ -13,6 +13,7 @@ curl --skip-existing -O https://repo1.maven.org/maven2/org/neo4j/neo4j-jdbc-bund
 cd - > /dev/null
 
 java \
+  -XX:+IgnoreUnrecognizedVMOptions \
   --sun-misc-unsafe-memory-access=allow \
   --enable-native-access=tagtraum.japlscript.executor \
   --module-path app/lib \
