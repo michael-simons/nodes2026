@@ -1,5 +1,9 @@
 # nodes2026
 
+> [!NOTE]
+> This repository is archived and the actual recommendation engine has been cleaned up from LLM generated prose before I moved it to my scrobbles4j project here: [scrobbles4j/recommendations](https://codeberg.org/michael-simons/scrobbles4j/src/branch/main/recommendations),
+> this readme is part of the documentation there: [Recommendatian app](https://codeberg.org/michael-simons/scrobbles4j/src/branch/main/CONTRIBUTING.md#recommendation-app).
+
 ## Introduction
 
 This is a demo project for [Neo4j Virtual Graph](https://neo4j.com/product/virtual-graph/), a labeled property graph modeled atop of relational databases.
